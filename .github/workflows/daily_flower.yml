@@ -1,0 +1,35 @@
+name: Daily Flower Bot
+
+on:
+  schedule:
+    # 月曜〜木曜（JST 10:00 = UTC 1:00）
+    - cron: '0 1 * * 1-4'
+    # 金曜のみ（JST 9:00 = UTC 0:00）
+    - cron: '0 0 * * 5'
+  workflow_dispatch:  # 手動実行も可能
+
+jobs:
+  post-flower:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Run flower bot
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        BING_API_KEY: ${{ secrets.BING_API_KEY }}
+        BING_SEARCH_ENDPOINT: ${{ secrets.BING_SEARCH_ENDPOINT }}
+      run: |
+        python flower_bot.py 
