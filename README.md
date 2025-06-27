@@ -1,11 +1,11 @@
 # Daily Flower Slack Bot
 
-毎日朝に花の情報をSlackに投稿するPythonボットです。平日（土日と祝日を除く）に自動実行されます。
+毎朝、今日のお花をSlackに投稿するPythonボットです。
 
 ## 機能
 
-- 📅 平日の朝に実行（祝日を除外）
-- 🌸 365日分の花の名前と花言葉をCSVから取得
+- 📅 毎朝10時に実行（祝日を除外）
+- 🌸 365日分の花の名前と花言葉をCSVから取得（日比谷花壇さんのサイトから引用させていただいています https://www.hibiyakadan.com/ext/hanakotoba）
 - 💬 Slack Webhookでメッセージを投稿
 - 🤖 GitHub Actionsで自動実行
 
@@ -26,13 +26,7 @@ pip install -r requirements.txt
 
 ### 3. 環境変数の設定
 
-`env.example`を参考に`.env`ファイルを作成してください：
-
-```bash
-cp env.example .env
-```
-
-`.env`ファイルに以下の値を設定：
+`.env`ファイルを作成し、以下の値を設定
 
 ```env
 # Slack Webhook URL
@@ -96,24 +90,6 @@ day,flower_name,meaning
 
 `flower_bot.py`の`post_to_slack`メソッドを編集してメッセージ形式を変更できます。
 
-## トラブルシューティング
-
-1. **環境変数が設定されていない**
-   - `.env`ファイルが正しく設定されているか確認
-   - GitHub Secretsが設定されているか確認
-
-2. **Slackに投稿されない**
-   - Webhook URLが正しいか確認
-   - Slackアプリの権限設定を確認
-
-### ログの確認
-
-スクリプトは詳細なログを出力します。エラーが発生した場合はログを確認してください。
-
 ## ライセンス
 
 MIT License
-
-## 貢献
-
-プルリクエストやイシューの報告を歓迎します！ 
