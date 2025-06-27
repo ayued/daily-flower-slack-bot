@@ -1,12 +1,12 @@
-# Daily Flower Slack Bot 🌺
+# Daily Flower Slack Bot
 
 毎日朝に花の情報をSlackに投稿するPythonボットです。平日（土日と祝日を除く）に自動実行されます。
 
 ## 機能
 
-- 📅 平日のみ実行（土日と祝日を除外）
+- 📅 毎朝平日のみ実行（土日と祝日を除外）
 - 🌸 365日分の花の名前と花言葉をCSVから取得
-- 💬 Slack Webhookで美しいメッセージを投稿
+- 💬 Slack Webhookでメッセージを投稿
 - 🤖 GitHub Actionsで自動実行
 
 ## セットアップ
