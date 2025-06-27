@@ -4,7 +4,7 @@
 
 ## 機能
 
-- 📅 毎朝平日のみ実行（土日と祝日を除外）
+- 📅 平日のみ実行（土日と祝日を除外）
 - 🌸 365日分の花の名前と花言葉をCSVから取得
 - 💬 Slack Webhookでメッセージを投稿
 - 🤖 GitHub Actionsで自動実行
@@ -36,7 +36,7 @@ cp env.example .env
 
 ```env
 # Slack Webhook URL
-SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
+SLACK_WEBHOOK_URL=your_slack_webhook_url_here
 ```
 
 ### 4. Slack Webhookの設定
