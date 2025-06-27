@@ -61,7 +61,7 @@ class FlowerBot:
         
         # 祝日チェック
         if jpholiday.is_holiday(check_date):
-            holiday_name = jpholiday.get_holiday_name(check_date)
+            holiday_name = jpholiday.is_holiday_name(check_date)
             logger.info(f"{check_date}は祝日です: {holiday_name}")
             return False
         
