@@ -28,15 +28,10 @@ class FlowerBot:
         
         # 環境変数の読み込み
         self.slack_webhook_url = os.getenv('SLACK_WEBHOOK_URL')
-        # self.bing_api_key = os.getenv('BING_API_KEY')
-        # self.bing_search_endpoint = os.getenv('BING_SEARCH_ENDPOINT', 
-        #                                    'https://api.bing.microsoft.com/v7.0/images/search')
         
         # 必須環境変数のチェック
         if not self.slack_webhook_url:
             raise ValueError("SLACK_WEBHOOK_URLが設定されていません")
-        # if not self.bing_api_key:
-        #     raise ValueError("BING_API_KEYが設定されていません")
         
         # 花のデータの読み込み
         self.flowers_df = self._load_flowers_data()
