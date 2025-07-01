@@ -2,10 +2,10 @@ name: Daily Flower Bot
 
 on:
   schedule:
-    # 月曜〜木曜（JST 10:00 = UTC 1:00）
-    - cron: '0 1 * * 1-4'
-    # 金曜のみ（JST 9:00 = UTC 0:00）
-    - cron: '0 0 * * 5'
+    # 月曜〜木曜（JST 9:00 = UTC 0:00）
+    - cron: '0 0 * * 1-4'
+    # 金曜のみ（JST 8:00 = UTC 23:00、前日木曜）
+    - cron: '0 23 * * 4'
   workflow_dispatch:  # 手動実行も可能
 
 jobs:
