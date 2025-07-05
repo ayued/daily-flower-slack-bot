@@ -9,24 +9,35 @@ from datetime import date
 from flower_bot import FlowerBot
 
 def test_workday_check():
-    """平日チェックのテスト"""
-    print("=== 平日チェックテスト ===")
+    """投稿対象曜日チェックのテスト"""
+    print("=== 投稿対象曜日チェックテスト ===")
     bot = FlowerBot()
     
-    # 今日の日付でテスト
-    today = date.today()
+    # 今日の日付でテスト（日本時間）
+    today = bot.get_jst_date()
     is_workday = bot.is_workday(today)
-    print(f"今日 ({today}) は平日: {is_workday}")
+    weekday_names = ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日', '日曜日']
+    print(f"今日（日本時間）({today}) は{weekday_names[today.weekday()]}: {is_workday}")
     
-    # 土曜日でテスト（例：2024年1月6日）
-    test_saturday = date(2024, 1, 6)
-    is_workday_sat = bot.is_workday(test_saturday)
-    print(f"土曜日 ({test_saturday}) は平日: {is_workday_sat}")
+    # 月曜日でテスト（例：2024年1月1日）
+    test_monday = date(2024, 1, 1)
+    is_workday_mon = bot.is_workday(test_monday)
+    print(f"月曜日 ({test_monday}) は投稿対象: {is_workday_mon}")
     
-    # 日曜日でテスト（例：2024年1月7日）
-    test_sunday = date(2024, 1, 7)
-    is_workday_sun = bot.is_workday(test_sunday)
-    print(f"日曜日 ({test_sunday}) は平日: {is_workday_sun}")
+    # 火曜日でテスト（例：2024年1月2日）
+    test_tuesday = date(2024, 1, 2)
+    is_workday_tue = bot.is_workday(test_tuesday)
+    print(f"火曜日 ({test_tuesday}) は投稿対象: {is_workday_tue}")
+    
+    # 水曜日でテスト（例：2024年1月3日）
+    test_wednesday = date(2024, 1, 3)
+    is_workday_wed = bot.is_workday(test_wednesday)
+    print(f"水曜日 ({test_wednesday}) は投稿対象: {is_workday_wed}")
+    
+    # 金曜日でテスト（例：2024年1月5日）
+    test_friday = date(2024, 1, 5)
+    is_workday_fri = bot.is_workday(test_friday)
+    print(f"金曜日 ({test_friday}) は投稿対象: {is_workday_fri}")
 
 def test_flower_data():
     """花のデータ取得のテスト"""
@@ -41,6 +52,30 @@ def test_flower_data():
         print(f"年間通算日: {flower_info['day']}")
     else:
         print("花の情報を取得できませんでした")
+
+def test_time_check():
+    """時間チェックのテスト"""
+    print("\n=== 時間チェックテスト ===")
+    bot = FlowerBot()
+    
+    from datetime import datetime, timezone, timedelta
+    
+    # 現在時刻でテスト（日本時間）
+    utc_now = datetime.now(timezone.utc)
+    jst = timezone(timedelta(hours=9))
+    now_jst = utc_now.astimezone(jst)
+    is_correct_time = bot.is_correct_time(now_jst)
+    print(f"現在時刻（日本時間）({now_jst.strftime('%H:%M')}) は投稿時間: {is_correct_time}")
+    
+    # 9時00分でテスト（日本時間）
+    test_time_9am = now_jst.replace(hour=9, minute=0, second=0, microsecond=0)
+    is_correct_time_9am = bot.is_correct_time(test_time_9am)
+    print(f"9時00分（日本時間）({test_time_9am.strftime('%H:%M')}) は投稿時間: {is_correct_time_9am}")
+    
+    # 10時00分でテスト（日本時間）
+    test_time_10am = now_jst.replace(hour=10, minute=0, second=0, microsecond=0)
+    is_correct_time_10am = bot.is_correct_time(test_time_10am)
+    print(f"10時00分（日本時間）({test_time_10am.strftime('%H:%M')}) は投稿時間: {is_correct_time_10am}")
 
 def test_slack_post():
     """Slack投稿のテスト（実際には投稿しない）"""
@@ -65,6 +100,7 @@ def main():
     
     try:
         test_workday_check()
+        test_time_check()
         test_flower_data()
         test_slack_post()
         

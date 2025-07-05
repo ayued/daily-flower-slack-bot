@@ -9,7 +9,7 @@ import sys
 import requests
 import pandas as pd
 import jpholiday
-from datetime import datetime, date
+from datetime import datetime, date, timezone, timedelta
 from dotenv import load_dotenv
 import logging
 from typing import Optional, Dict, Any
@@ -50,13 +50,15 @@ class FlowerBot:
             sys.exit(1)
     
     def is_workday(self, check_date: Optional[date] = None) -> bool:
-        """平日かどうかをチェック（土日と祝日を除外）"""
+        """指定された曜日（月曜・火曜・金曜）かどうかをチェック"""
         if check_date is None:
-            check_date = date.today()
+            check_date = self.get_jst_date()  # 日本時間の今日の日付を取得
         
-        # 土日チェック
-        if check_date.weekday() >= 5:  # 5=土曜日, 6=日曜日
-            logger.info(f"{check_date}は土日です")
+        # 曜日チェック（0=月曜日, 1=火曜日, 4=金曜日）
+        allowed_weekdays = [0, 1, 4]  # 月曜・火曜・金曜
+        if check_date.weekday() not in allowed_weekdays:
+            weekday_names = ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日', '日曜日']
+            logger.info(f"{check_date}は{weekday_names[check_date.weekday()]}のため、投稿をスキップします")
             return False
         
         # 祝日チェック
@@ -65,13 +67,39 @@ class FlowerBot:
             logger.info(f"{check_date}は祝日です: {holiday_name}")
             return False
         
-        logger.info(f"{check_date}は平日です")
+        logger.info(f"{check_date}は投稿対象日です")
         return True
+    
+    def is_correct_time(self, check_time: Optional[datetime] = None) -> bool:
+        """投稿時間（9時）かどうかをチェック"""
+        if check_time is None:
+            # 日本時間で現在時刻を取得
+            utc_now = datetime.now(timezone.utc)
+            jst = timezone(timedelta(hours=9))
+            check_time = utc_now.astimezone(jst)
+        
+        # 9時に投稿
+        if check_time.hour == 9 and check_time.minute == 0:
+            logger.info(f"{check_time.strftime('%H:%M')}は投稿時間です")
+            return True
+        
+        logger.info(f"{check_time.strftime('%H:%M')}は投稿時間ではありません（投稿時間: 9:00）")
+        return False
+    
+    def get_jst_date(self) -> date:
+        """日本時間（JST）の今日の日付を取得"""
+        # UTCからJST（+9時間）を計算
+        utc_now = datetime.now(timezone.utc)
+        jst = timezone(timedelta(hours=9))
+        jst_now = utc_now.astimezone(jst)
+        return jst_now.date()
     
     def get_todays_flower(self) -> Optional[Dict[str, Any]]:
         """今日の花の情報を取得"""
-        today = date.today()
+        today = self.get_jst_date()  # 日本時間の今日の日付を取得
         today_str = today.strftime('%m-%d')  # MM-DD形式に変換
+
+        logger.info(f"日本時間の今日の日付: {today} ({today_str})")
 
         # 花のデータから該当する日を取得
         flower_data = self.flowers_df[self.flowers_df['date'] == today_str]
@@ -118,9 +146,14 @@ class FlowerBot:
         """メイン処理を実行"""
         logger.info("花の投稿処理を開始します")
         
-        # 平日チェック
+        # 投稿対象曜日チェック
         if not self.is_workday():
-            logger.info("今日は平日ではないため、投稿をスキップします")
+            logger.info("今日は投稿対象曜日ではないため、投稿をスキップします")
+            return
+        
+        # 投稿時間チェック
+        if not self.is_correct_time():
+            logger.info("現在は投稿時間ではないため、投稿をスキップします")
             return
         
         # 今日の花の情報を取得
